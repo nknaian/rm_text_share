@@ -1,0 +1,8 @@
+[Unit]
+Description=Application to automatically share updates to text conversion files
+
+[Service]
+ExecStart=/usr/bin/rm_text_share
+
+[Install]
+WantedBy=multi-user.target

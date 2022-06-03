@@ -4,5 +4,10 @@ A project to share the text conversion files stored on the remarkable over the i
 # Build
 ```
 cargo install cross
-cross build --target armv7-unknown-linux-gnueabihf
+cross build --target armv7-unknown-linux-gnueabihf --release
+```
+
+# Deploy
+```
+./deploy.sh
 ```
