@@ -1,6 +1,10 @@
-use notify::{watcher, RecursiveMode, Watcher};
+mod text_conversion;
+
+use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
 use std::sync::mpsc::channel;
 use syslog::{BasicLogger, Facility, Formatter3164};
+
+use crate::text_conversion::TextConversion;
 
 fn main() {
     // Setup logging to syslog (at info level)
@@ -41,8 +45,22 @@ fn main() {
 
     loop {
         match rx.recv() {
-            Ok(event) => println!("{:?}", event),
+            Ok(event) => handle_event(event), // NOTE: How is println working to show up in syslog??
             Err(e) => println!("watch error: {:?}", e),
         }
+        // TODO: Need to also check the files in the local folder for updating dropbox...
+        // I don't think I can just immediately send updates to dropbox when the events occur, because it's possible that
+        // there won't be internet connection...
+    }
+}
+
+fn handle_event(event: DebouncedEvent) {
+    match event {
+        DebouncedEvent::Create(path) | DebouncedEvent::Write(path) => {
+            if let Some(text_conversion) = TextConversion::new(path) {
+                log::info!("Here's the text conversion: {:?}", text_conversion);
+            }
+        }
+        _ => (),
     }
 }
